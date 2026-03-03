@@ -49,20 +49,23 @@ func Encode(sf *format.StandardFormat) ([]byte, error) {
 		jNbt.Palette = []PaletteEntry{{Name: "minecraft:air"}}
 	}
 
-	// Build blocks (relative to Position origin)
 	jNbt.Blocks = make([]JavaBlock, 0, len(sf.Blocks))
 	for _, b := range sf.Blocks {
-		if b.Type == "block" || b.Type == "" {
-			jNbt.Blocks = append(jNbt.Blocks, JavaBlock{
-				Pos: ListTag{
-					int32(b.Position.X) - int32(sf.Position.X),
-					int32(b.Position.Y) - int32(sf.Position.Y),
-					int32(b.Position.Z) - int32(sf.Position.Z),
-				},
-				State: int32(b.State),
-				Nbt:   b.NBT,
-			})
+		// Include all types that represent a placed block in the world.
+		// "entity" is handled separately in jNbt.Entities.
+		if b.Type == "entity" {
+			continue
 		}
+
+		jNbt.Blocks = append(jNbt.Blocks, JavaBlock{
+			Pos: ListTag{
+				int32(b.Position.X) - int32(sf.Position.X),
+				int32(b.Position.Y) - int32(sf.Position.Y),
+				int32(b.Position.Z) - int32(sf.Position.Z),
+			},
+			State: int32(b.State),
+			Nbt:   b.NBT,
+		})
 	}
 
 	log.Printf("buildnbt.Encode: DataVersion=%d, Size=%v, Palette=%d, Blocks=%d",
