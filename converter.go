@@ -9,6 +9,7 @@
 package javanbt
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -20,7 +21,7 @@ import (
 )
 
 // ConvertLitematica converts a .litematic file to Java Structure NBT bytes.
-func ConvertLitematica(filePath string) ([]byte, error) {
+func ConvertLitematica(ctx context.Context, filePath string) ([]byte, error) {
 	lit, err := litematica.ParseFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("litematica parse: %w", err)
@@ -33,7 +34,7 @@ func ConvertLitematica(filePath string) ([]byte, error) {
 }
 
 // ConvertSchem converts a .schem (Sponge Schematic v2/v3) file to Java Structure NBT bytes.
-func ConvertSchem(filePath string) ([]byte, error) {
+func ConvertSchem(ctx context.Context, filePath string) ([]byte, error) {
 	we, err := worldedit.ParseFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("worldedit parse: %w", err)
@@ -47,7 +48,7 @@ func ConvertSchem(filePath string) ([]byte, error) {
 
 // ConvertStructureNBT converts a .nbt (Java Structure) file to standardized
 // Java Structure NBT bytes.
-func ConvertStructureNBT(filePath string) ([]byte, error) {
+func ConvertStructureNBT(ctx context.Context, filePath string) ([]byte, error) {
 	s, err := structure.ParseFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("structure parse: %w", err)
@@ -61,16 +62,16 @@ func ConvertStructureNBT(filePath string) ([]byte, error) {
 
 // ConvertAny auto-detects the format from the file extension and converts
 // accordingly.  Supported extensions: .litematic, .schem, .nbt
-func ConvertAny(filePath string) ([]byte, error) {
+func ConvertAny(ctx context.Context, filePath string) ([]byte, error) {
 	ext := strings.ToLower(filepath.Ext(filePath))
 
 	switch ext {
 	case ".litematic":
-		return ConvertLitematica(filePath)
+		return ConvertLitematica(ctx, filePath)
 	case ".schem":
-		return ConvertSchem(filePath)
+		return ConvertSchem(ctx, filePath)
 	case ".nbt":
-		return ConvertStructureNBT(filePath)
+		return ConvertStructureNBT(ctx, filePath)
 	default:
 		return nil, fmt.Errorf("unsupported file extension: %s (supported: .litematic, .schem, .nbt)", ext)
 	}
