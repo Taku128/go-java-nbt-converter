@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -33,7 +34,7 @@ func main() {
 
 	fmt.Printf("Converting: %s → %s\n", inputFile, *outputFile)
 
-	nbtBytes, err := javanbt.ConvertAny(inputFile)
+	nbtBytes, err := javanbt.ConvertAny(context.Background(), inputFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
